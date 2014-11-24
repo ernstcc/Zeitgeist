@@ -43,8 +43,11 @@ class BST : public SSet <Key,T> {
   // return the first such key. If not, return k
   virtual Key prev(Key k);
 
+  virtual Node<Key, T>* find(Key k, Node<Key, T>* r);
+  Node<Key, T>* root;
+
 private:
-  Node<Key,T>* root;
+  
 
   virtual unsigned long size(Node<Key,T>* r);
   //These are the recursive versions of each of your methods.
@@ -55,7 +58,7 @@ private:
 
   //This one returns the address of the found node, NULL
   // if not found
-  virtual Node<Key,T>* find(Key k, Node<Key,T>* r);
+  
 
   //Find the item in the sub-tree rooted at r which has the smallest key
   virtual Node<Key,T>* min(Node<Key,T>* r);

@@ -1,49 +1,60 @@
-#include "ourTrends.h"/*
-#include <algorithm>
+#include "ourTrends.h"
 
 void ourTrends::increaseCount(std::string s, unsigned int amount){
-	//Check to see if word is already present
-	for (unsigned int i = 0; i < wordCountVector.size(); i++){
-		if (wordCountVector[i].first == s){
-			//If so, just increment the "amount"
-			wordCountVector[i].second += amount;
-			return;
+	if (trendTree.keyExists(s)){
+		Node<std::string,int>* temp=trendTree.find(s,trendTree.root);
+		temp->data += amount;
+
+		for (int x = 0; x < 10; x++){
+			if (temp->data > top10[x].data){
+				updateTop10(x, *(temp));
+			}
 		}
 	}
-	//If not, add a new item to the list.
-	wordCountVector.push_back(std::make_pair(s, amount));
+	else{
+		if (trendTree.size < 10){
+			top10[trendTree.size].data = amount;
+			top10[trendTree.size].k = s;
+		}
+		trendTree.add(s, amount);
+
+	}
+}
+
+void ourTrends::updateTop10(int index, Node<std::string,int> n){
+	std::string lastName = top10[index].k;
+	int lastNum = top10[index].data;
+
+	std::string currentName;
+	int currentNum;
+
+	top10[index].k = n.k;
+	top10[index].data = n.data;
+
+	for (int x = index + 1; x < 10; x++){
+		currentName = top10[x].k;
+		currentNum = top10[x].data;
+
+		top10[x].k = lastName;
+		top10[x].data = lastNum;
+
+		lastName = currentName;
+		lastNum = currentNum;
+	}
 }
 
 unsigned int ourTrends::getCount(std::string s){
-	//Check to see if word is present
-	for (unsigned int i = 0; i < wordCountVector.size(); i++){
-		if (wordCountVector[i].first == s){
-			//If so, return the count
-			return wordCountVector[i].second;
-		}
-	}
-	//otherwise, return 0
-	return 0;
+	Node<std::string, int>* temp = trendTree.find(s, trendTree.root);
+	return temp->data;
 }
 
-bool compareFunc(std::pair<std::string, unsigned int> i, std::pair<std::string, unsigned int> j) {
-	if (i.second == j.second){
-		return (i.first < j.first);
-	}
-
-	return (i.second > j.second);
-}
 
 std::string ourTrends::getNthPopular(unsigned int n){
-	std::sort(wordCountVector.begin(), wordCountVector.end(), compareFunc);
-	if (n <= numEntries()){
-		return wordCountVector[n].first;
+	if (n <= 10){
+		return top10[n].k;
 	}
-
-	//If they give bad input, return empty string.
-	return "";
 }
 
 unsigned int ourTrends::numEntries(){
-	return wordCountVector.size();
-}*/
+	return trendTree.size();
+}
